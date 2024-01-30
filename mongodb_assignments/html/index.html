@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roll Number Input</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Roll Number Input</h1>
+        <form id="rollNumberForm">
+            <div class="form-group">
+                <label for="rollNumber">Enter Roll Number:</label>
+                <input type="text" class="form-control" id="rollNumber" placeholder="Enter roll number" required>
+            </div>
+            <div class="form-group">
+                <label for="crudOperation">Select CRUD Operation:</label>
+                <select class="form-control" id="crudOperation" required>
+                    <option value="create">Create</option>
+                    <option value="read">Read</option>
+                    <option value="update">Update</option>
+                    <option value="delete">Delete</option>
+                </select>
+            </div>
+            <div class="form-group" id="additionalDataSection" style="display: none;">
+                <label for="name">Name:</label>
+                <input type="text" class="form-control" id="name" placeholder="Enter name">
+                <label for="age">Age:</label>
+                <input type="text" class="form-control" id="age" placeholder="Enter age">
+                <label for="Class">Class:</label>
+                <input type="text" class="form-control" id="Class" placeholder="Enter class">
+                <label for="section">Section:</label>
+                <input type="text" class="form-control" id="section" placeholder="Enter section">
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+        <div id="result"></div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+    <script>
+        const form = document.getElementById('rollNumberForm');
+        const resultDiv = document.getElementById('result');
+        const additionalDataSection = document.getElementById('additionalDataSection');
+        const crudOperationSelect = document.getElementById('crudOperation');
+        const url = `http://localhost:5000/api/crud`
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const rollNumberInput = document.getElementById('rollNumber');
+            const rollNumber = rollNumberInput.value;
+            const crudOperationSelect = document.getElementById('crudOperation');
+            const crudOperation = crudOperationSelect.value;
+
+            let additionalData = {};
+            if (crudOperation === 'create' || crudOperation === 'update') {
+                additionalData = {
+                    name: document.getElementById('name').value,
+                    age: document.getElementById('age').value,
+                    Class: document.getElementById('Class').value,
+                    section: document.getElementById('section').value
+                };
+            }
+
+            switch (crudOperation) {
+                case 'create':
+                    const createdRollNumber = await createRollNumber(rollNumber, additionalData);
+                    resultDiv.innerHTML = `Created Roll Number: ${createdRollNumber}`;
+                    break;
+                case 'read':
+                    const student = await getStudent(rollNumber);
+                    if (student) {
+                        resultDiv.innerHTML = `
+                            <h2>Student Details</h2>
+                            <p><strong>Name:</strong> ${student.name}</p>
+                            <p><strong>Age:</strong> ${student.age}</p>
+                            <p><strong>Class:</strong> ${student.Class}</p>
+                            <p><strong>Section:</strong> ${student.section}</p>
+                        `;
+                    } else {
+                        resultDiv.innerHTML = 'Student not found';
+                    }
+                    break;
+                case 'update':
+                    const updatedRollNumber = await updateRollNumber(rollNumber, additionalData);
+                    resultDiv.innerHTML = `Updated Roll Number: ${updatedRollNumber}`;
+                    break;
+                case 'delete':
+                    const deletedRollNumber = await deleteRollNumber(rollNumber);
+                    resultDiv.innerHTML = `Deleted Roll Number: ${deletedRollNumber}`;
+                    break;
+                default:
+                    resultDiv.innerHTML = 'Invalid CRUD operation selected';
+                    break;
+            }
+
+            // Reset the form
+            rollNumberInput.value = '';
+            document.getElementById('name').value = '';
+            document.getElementById('age').value = '';
+            document.getElementById('Class').value = '';
+            document.getElementById('section').value = '';
+        });
+
+        // Show additional data section when 'create' or 'update' is selected
+        crudOperationSelect.addEventListener('change', () => {
+            additionalDataSection.style.display =
+                crudOperationSelect.value === 'create' || crudOperationSelect.value === 'update'
+                    ? 'block'
+                    : 'none';
+        });
+
+        async function createRollNumber(rollNumber, additionalData) {
+            try {
+                const response = await axios.post(`${url}`, { rollno: rollNumber, ...additionalData });
+                return response.data.rollno;
+            } catch (error) {
+                console.error(error);
+                return 'Error creating roll number';
+            }
+        }
+
+        async function getStudent(rollNumber) {
+            try {
+                const response = await axios.get(`${url}/${rollNumber}`);
+                return response.data;
+            } catch (error) {
+                console.error(error);
+                return null;
+            }
+        }
+
+        async function updateRollNumber(rollNumber, additionalData) {
+            try {
+                const response = await axios.put(`${url}/${rollNumber}`, {
+                    rollno: rollNumber,
+                    ...additionalData
+                });
+                return response.data.rollno;
+            } catch (error) {
+                console.error(error);
+                return 'Error updating roll number';
+            }
+        }
+
+        async function deleteRollNumber(rollNumber) {
+            try {
+                const response = await axios.delete(`${url}/${rollNumber}`);
+                return response.data.message;
+            } catch (error) {
+                console.error(error);
+                return 'Error deleting roll number';
+            }
+        }
+    </script>
+</body>
+
+</html>

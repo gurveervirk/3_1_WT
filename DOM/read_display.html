@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Information</title>
+</head>
+<body>
+    <h1>Student Information</h1>
+    <table id="studentTable">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Age</th>
+                <th>College</th>
+                <th>Year</th>
+                <th>Semester</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Student data will be dynamically added here -->
+        </tbody>
+    </table>
+
+    <script>
+        const obj = {
+            "student": [
+                {"name": "Bhavana", "age": "20", "college": "KMIT", "year": 3, "sem": 1},
+                {"name": "Ram", "age": "21", "college": "JNTU", "year": 4, "sem": 2},
+                {"name": "John", "age": "26", "college": "KMEC", "year": 1, "sem": 1},
+                {"name": "Reena", "age": "19", "college": "NGIT", "year": 3, "sem": 1}
+            ]
+        }
+
+        const studentTable = document.getElementById("studentTable");
+        const tbody = studentTable.querySelector("tbody");
+
+        obj.student.forEach(student => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${student.name}</td>
+                <td>${student.age}</td>
+                <td>${student.college}</td>
+                <td>${student.year}</td>
+                <td>${student.sem}</td>
+            `;
+            tbody.appendChild(row);
+        });
+    </script>
+</body>
+</html>

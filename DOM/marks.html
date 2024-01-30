@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Information</title>
+</head>
+<body>
+    <h1>Student Information</h1>
+    <form id="studentForm">
+        <label for="rollNumber">Roll Number:</label>
+        <input type="text" id="rollNumber" required><br><br>
+        
+        <label for="name">Name:</label>
+        <input type="text" id="name" required><br><br>
+        
+        <label for="marks">Marks:</label>
+        <input type="number" id="marks" required><br><br>
+        
+        <button type="button" id="submit">Submit</button>
+    </form>
+
+    <table id="studentTable">
+        <thead>
+            <tr>
+                <th>Roll Number</th>
+                <th>Name</th>
+                <th>Marks</th>
+                <th>GPA</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Student data will be dynamically added here -->
+        </tbody>
+    </table>
+
+    <script>
+        const studentForm = document.getElementById("studentForm");
+        const rollNumberInput = document.getElementById("rollNumber");
+        const nameInput = document.getElementById("name");
+        const marksInput = document.getElementById("marks");
+        const submitButton = document.getElementById("submit");
+        const studentTable = document.getElementById("studentTable");
+        const tbody = studentTable.querySelector("tbody");
+
+        submitButton.addEventListener("click", function () {
+            const rollNumber = rollNumberInput.value;
+            const name = nameInput.value;
+            const marks = parseFloat(marksInput.value);
+
+            if (!rollNumber || !name || isNaN(marks)) {
+                alert("Please enter valid data.");
+                return;
+            }
+
+            const gpa = calculateGPA(marks);
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${rollNumber}</td>
+                <td>${name}</td>
+                <td>${marks}</td>
+                <td>${gpa}</td>
+            `;
+            tbody.appendChild(row);
+
+            // Clear the input fields after submission
+            rollNumberInput.value = "";
+            nameInput.value = "";
+            marksInput.value = "";
+        });
+
+        function calculateGPA(marks) {
+            // You can implement your GPA calculation logic here
+            // For example, if marks >= 90, GPA = 4.0, if marks >= 80, GPA = 3.5, and so on
+            // You can define your own GPA scale based on your requirements.
+            return (marks / 10).toFixed(2);
+        }
+    </script>
+</body>
+</html>

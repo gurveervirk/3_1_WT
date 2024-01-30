@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Weather App</title>
+    <style>
+        .container {
+            display: table;
+            margin: 0 auto;
+        }
+        .row {
+            display: table-row;
+        }
+        .cell {
+            display: table-cell;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Weather App</h1>
+
+    <div class="container">
+        <div class="row">
+            <div class="cell">
+                <label for="location">Select a location:</label>
+            </div>
+            <div class="cell">
+                <select id="location">
+                    <option value="HYD">HYD</option>
+                    <option value="BAN">BAN</option>
+                    <option value="DEL">DEL</option>
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="cell">
+                <button id="getWeather">Get Weather</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="cell">
+                <div id="weatherResult">\
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("getWeather").addEventListener("click", function() {
+            const location = document.getElementById("location").value;
+            const apiKey = "38e04c2ed62bd50e26afae116edee313";
+            var latitude = 123.456;
+            var longitude = 789.012;
+            if(location == "HYD"){
+                latitude = 17.3850;
+                longitude = 78.4867;
+            }
+            else if(location == "BAN"){
+                latitude = 12.9716;
+                longitude = 77.5946;
+            }
+            else if(location == "DEL"){
+                latitude = 28.7041;
+                longitude = 77.1025;
+            }
+            const apiUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=metric`;
+            const weatherResult = document.getElementById("weatherResult");
+
+            const xhr = new XMLHttpRequest();
+            xhr.open("GET", apiUrl, true);
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    const data = JSON.parse(xhr.responseText);
+                    const temperature = data.main.temp;
+                    const description = data.weather[0].description;
+                    weatherResult.innerHTML = `Temperature: ${temperature}°C, Description: ${description}`;
+                } else if (xhr.status === 404) {
+                    weatherResult.innerHTML = "Location not found.";
+                } else {
+                    weatherResult.innerHTML = "Failed to fetch weather data.";
+                }
+            };
+            xhr.send();
+        });
+    </script>
+</body>
+</html>
